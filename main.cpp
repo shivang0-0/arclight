@@ -55,7 +55,7 @@ bool writeSongs(details *d)
     fstream fileNames("mp3list.txt");
     string line, name, artist, file;
     char ch;
-    int i, flag, j = 0;
+    unsigned int i, flag, j = 0;
     if(database.is_open() && fileNames.is_open())
     {
         while(!database.eof() && !fileNames.eof())
@@ -243,7 +243,7 @@ int main()
         {
         case 1:
         {
-            for(int x=0; x<2; x++)
+            for(int x=0; x<5; x++)
             {
                 cout<<"Song number: "<<x+1<<endl;
                 d[x].printDetails();
@@ -253,13 +253,14 @@ int main()
             cout<<"Enter song number to play: ";
             cin>>y;
             playSong(d[y-1]);
+            system("cls");
             break;
         }
         case 2:
         {
             while(opt)
             {
-                for(int x=0; x<2; x++)
+                for(int x=0; x<5; x++)
                 {
                     cout<<"Song number: "<<x+1<<endl;
                     d[x].printDetails();
@@ -272,8 +273,8 @@ int main()
                 w++;
                 cout<<"Do you want to add another song [1(YES)/0(NO)]: ";
                 cin>>opt;
-                system("cls");
             }
+            system("cls");
             break;
         }
         case 3:
@@ -297,6 +298,7 @@ replay:
             }
 
             q.clearQueue();
+            system("cls");
             break;
         }
         case 4:
