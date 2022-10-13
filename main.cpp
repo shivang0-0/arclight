@@ -43,6 +43,12 @@ public:
         return artist.front();
     }
 };
+struct song
+{
+    details d;
+    song* next;
+    song* prev;
+};
 bool writeSongs(details *d)
 {
     fstream database("nameartist.txt");
@@ -83,7 +89,7 @@ skipComma:
     else
         return false;
 }
-void playSingleSong(details d)
+void playSong(details d)
 {
     int n = 0;
     time_t t1, t2, previous_pause_time=0;
@@ -104,7 +110,7 @@ void playSingleSong(details d)
             t2=time(0);
             cout<<"Song paused after playing for " << t2-t1+previous_pause_time << " seconds.\n\n";
             previous_pause_time+=t2-t1;
-            cout<<"Enter 1 to resume the song or 2 to exit: ";
+            cout<<"Enter 1 to resume the song or 2 to stop: ";
             cin>>n;
             if(n==1)
             {
@@ -126,23 +132,184 @@ void playSingleSong(details d)
 
     }
 }
+class songQueue
+{
+    song *head, *tail;
+public:
+    songQueue()
+    {
+        head = NULL;
+        tail = NULL;
+    }
+    void addSong(details d)
+    {
+        song *s = new song;
+        s->d = d;
+        if(head==NULL)
+        {
+            head = s;
+            tail = s;
+            s->prev = NULL;
+        }
+        else
+        {
+            song *temp = head;
+            while(temp->next!=NULL)
+                temp = temp->next;
+            temp->next = s;
+            s->prev = temp;
+            tail = tail->next;
+        }
+        s->next = NULL;
+
+    }
+
+    bool printSongByIndex(int x)
+    {
+        song* temp = head;
+        for(int i=0; i<x; i++)
+            temp = temp->next;
+
+        cout<<"Song number "<<x+1<<" : "<<endl;
+        (temp->d).printDetails();
+        cout<<endl;
+
+        return true;
+    }
+    void playQueueFromEnd(int i)
+    {
+        song* temp = tail;
+        while(temp!=head->prev)
+        {
+            printSongByIndex(i);
+            i--;
+            playSong(temp->d);
+            temp = temp->prev;
+        }
+    }
+    void playQueueFromFront()
+    {
+        song* temp = head;
+        int j = 0;
+        while(temp!=tail->next)
+        {
+            printSongByIndex(j);
+            j++;
+            playSong(temp->d);
+            temp = temp->next;
+        }
+    }
+    void clearQueue()
+    {
+        song* temp;
+        while(head!=NULL)
+        {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+    song* retHead()
+    {
+        return head;
+    }
+    ~songQueue()
+    {
+        song* temp;
+        while(head!=NULL)
+        {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
 
 int main()
 {
     details d[10];
+    songQueue q;
+    int ch,w=0,opt;
     writeSongs(d);
-//    mciSendString("open \"songs\\BlindingLights.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
-//    mciSendString("open \"songs\\comethru.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
-//    mciSendString("play mp3 wait", NULL, 0, NULL);
-    for(int x=0; x<2; x++)
+    while(true)
     {
-        cout<<"Song number: "<<x+1<<endl;
-        d[x].printDetails();
-        cout<<"\n";
+        cout<<"1: Play Single Song"<<endl;
+        cout<<"2: Add songs to Queue"<<endl;
+        cout<<"3: Play queue"<<endl;
+        cout<<"4: Exit"<<endl;
+        cout<<"Enter choice: ";
+        cin>>ch;
+        switch(ch)
+        {
+        case 1:
+        {
+            for(int x=0; x<2; x++)
+            {
+                cout<<"Song number: "<<x+1<<endl;
+                d[x].printDetails();
+                cout<<"\n";
+            }
+            int y;
+            cout<<"Enter song number to play: ";
+            cin>>y;
+            playSong(d[y-1]);
+            break;
+        }
+        case 2:
+        {
+            while(opt)
+            {
+                for(int x=0; x<2; x++)
+                {
+                    cout<<"Song number: "<<x+1<<endl;
+                    d[x].printDetails();
+                    cout<<"\n";
+                }
+                int y;
+                cout<<"Enter song number to add to queue: ";
+                cin>>y;
+                q.addSong(d[y-1]);
+                w++;
+                cout<<"Do you want to add another song [1(YES)/0(NO)]: ";
+                cin>>opt;
+                system("cls");
+            }
+            break;
+        }
+        case 3:
+        {
+            if(q.retHead() == NULL)
+            {
+                cout<<"No song in the queue \n";
+                break;
+            }
+replay:
+            cout<<"Play from beginning or end [1(BEGINNING)/0(END)]: ";
+            cin>>opt;
+            if(opt==1)
+                q.playQueueFromFront();
+            else if(opt==0)
+                q.playQueueFromEnd(w-1);
+            else
+            {
+                cout<<"Not a valid selection \n";
+                goto replay;
+            }
+
+            q.clearQueue();
+            break;
+        }
+        case 4:
+        {
+            cout<<"THANK YOU "<<(char)1<<endl;
+            exit(0);
+        }
+        default:
+        {
+            cout<<"INVALID!!!!"<<endl;
+            break;
+        }
+        }
     }
-    int y;
-    cout<<"Enter song number to play: ";
-    cin>>y;
-    playSingleSong(d[y-1]);
     return 0;
 }
