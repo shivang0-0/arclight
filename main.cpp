@@ -86,10 +86,9 @@ int main()
 {
     details d[10];
     writeSongs(d);
-    writeSongs(d);
     d[0].printDetails();
     d[1].printDetails();
-    //mciSendString("open \"songs\\BlindingLights.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
+    mciSendString("open \"songs\\BlindingLights.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
     mciSendString("open \"songs\\comethru.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
     mciSendString("play mp3 wait", NULL, 0, NULL);
     cout << "Hello world!" << endl;
