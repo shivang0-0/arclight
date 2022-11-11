@@ -4,7 +4,62 @@
 #include <fstream>
 #include <time.h>
 using namespace std;
+class TreeNode
+{
+public:
+    string name;
+    TreeNode *left,*right;
+    TreeNode()
+    {
+        name ="";
+        left = NULL;
+        right = NULL;
+    }
+    TreeNode(string s)
+    {
+        name = s;
+        left = NULL;
+        right = NULL;
+    }
+};
+class tree
+{
+    public:
+    TreeNode *root;
+    tree()
+    {
+        root = NULL;
+    }
+    TreeNode* insertIntoBST(TreeNode* root, string name)
+    {
+        if (root==NULL)
+            return new TreeNode(name);
+        TreeNode* curr= root;
+        while (true)
+        {
+            if (curr->name > name)
+            {
+                if(curr->left)curr= curr->left;
+                else
+                {
+                    curr->left= new TreeNode(name);
+                    break;
+                }
 
+            }
+            else
+            {
+                if(curr->right)curr= curr->right;
+                else
+                {
+                    curr->right= new TreeNode(name);
+                    break;
+                }
+            }
+        }
+        return root;
+    }
+};
 class details
 {
     vector<string> name;
@@ -29,6 +84,10 @@ public:
         cout<<"Name of song: "<<name.front()<<endl;
         cout<<"Name of artist: "<<artist.front()<<endl;
         cout<<"Name of file: "<<fileName.front()<<endl;
+    }
+    void addDetails(TreeNode *root,tree t)
+    {
+        t.insertIntoBST(root,name.front());
     }
     string returnFileName()
     {
