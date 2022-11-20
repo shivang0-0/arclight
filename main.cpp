@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <time.h>
+
 using namespace std;
 
 class details
@@ -129,7 +130,6 @@ void playSong(details d)
             mciSendString("close mp3", NULL, 0, NULL);
             break;
         }
-
     }
 }
 class songQueue
