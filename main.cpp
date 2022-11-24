@@ -6,14 +6,20 @@
 #include <queue>
 using namespace std;
 
+/* Forward declaration of
+classes to use certain funcitonalities */
+
 class TreeNode;
 class tree;
+/*Details class contains information
+for each songs*/
 class details
 {
 public:
     string name;
     string artist;
     string fileName;
+    //returns true if songs are exactly same
     bool equality(details d)
     {
         if(name == d.name && artist == d.artist && fileName == d.fileName)
@@ -21,44 +27,55 @@ public:
         else
             return false;
     }
+    //initialising details object with given arguments
     void addDetails(string n, string a, string f)
     {
         name = n;
         artist = a;
         fileName = f;
     }
+    //Add song names to the bst for future uses
     void addDetails(TreeNode*,tree);
+    //function to print details of the details object
     void printDetails()
     {
         cout<<"Name of song: "<<name<<endl;
         cout<<"Name of artist: "<<artist<<endl;
         cout<<"Name of file: "<<fileName<<endl;
     }
+    //returns the filename for the chosen song (object of details)
     string returnFileName()
     {
         return fileName;
     }
+    //returns the song name for the choosen song (object of details)
     string returnSongName()
     {
         return name;
     }
+    //returns the artist name for the choosen song (object of details)
     string returnArtistName()
     {
         return artist;
     }
 };
 
+/* TreeNode class contains the basic
+structure of the BST implemented in the code*/
+
 class TreeNode
 {
 public:
     string name;
     TreeNode *left,*right;
+    //default constructor for the node
     TreeNode()
     {
         name ="";
         left = NULL;
         right = NULL;
     }
+    //parameterised constructor for the node
     TreeNode(string s)
     {
         name = s;
@@ -66,25 +83,34 @@ public:
         right = NULL;
     }
 };
+
+/* tree class contains all related functions
+for BST implementation */
+
 class tree
 {
 public:
     TreeNode *root;
+    //default constructor of tree
     tree()
     {
         root = NULL;
     }
+    //function to insert song names into BST
     void insertIntoBST(string name)
     {
+        //if tree is empty initialise new node with root
         if(root == NULL)
         {
             TreeNode *t = new TreeNode(name);
             root = t;
             return;
         }
+        //if tree isn't empty traverse the tree to search insert position
         TreeNode *curr = root;
         while (true)
         {
+            //traverse the left sub-tree
             if (name < (curr->name))
             {
                 if(curr->left)
@@ -95,6 +121,7 @@ public:
                     break;
                 }
             }
+            //traverse the right sub-tree
             else
             {
                 if(curr->right)
@@ -107,6 +134,8 @@ public:
             }
         }
     }
+    /*display function to display node data of
+    each node in level order (for internal use by devs)*/
     void display()
     {
         if(root==NULL)
@@ -128,6 +157,8 @@ public:
         }
         cout<<endl;
     }
+    /*returns the index of the song
+    to be searched using linear search algo*/
     int getindex(details *d,string name)
     {
         cout<<"getindx reached"<<endl;
@@ -141,6 +172,9 @@ public:
             }
         }
     }
+    /*function to search the name of song in BST
+    and call getindx to get and then return it 
+    to the driver code*/
     int searchnplay(string name,details *d)
     {
         cout<<"srchnplay reached "<<endl;
@@ -166,17 +200,22 @@ public:
         cout<<"Not found in our library!!"<<endl;
         return -1;
     }
-}bst;
+}bst; //global object of the tree
+
+//outside declaratoin of addDetails
 void details::addDetails(TreeNode *root,tree t)
-    {
-        t.insertIntoBST(name);
-    }
+{
+    t.insertIntoBST(name);
+}
+//structure of each song
 struct song
 {
     details d;
     song* next;
     song* prev;
 };
+/* function to write songs into details array
+and bst by reading from files */
 bool writeSongs(details *d, tree *bst)
 {
     fstream database("nameartist.txt");
@@ -196,6 +235,9 @@ bool writeSongs(details *d, tree *bst)
             while(i<line.length())
             {
                 ch = line[i];
+                /*technique implemented to read file
+                as name before encountering comma(,)
+                and as artist after it*/
                 if(ch == ',')
                 {
                     flag = 1;
@@ -209,7 +251,9 @@ bool writeSongs(details *d, tree *bst)
 skipComma:
                 i++;
             }
+            //bst insertoion function calling
             bst->insertIntoBST(name);
+            //insertion in details array calling
             (d+j)->addDetails(name, artist, file);
             j++;
         }
@@ -218,16 +262,19 @@ skipComma:
     else
         return false;
 }
+/*function to play a song based on index
+received from calling)*/
 void playSong(details d)
 {
     int n = 0;
     time_t t1, t2, previous_pause_time=0;
     string filename = "open \"songs\\"+d.returnFileName()+"\" type mpegvideo alias mp3";
+    //function included in windows.h to perform operations with multimedia formats
     mciSendString(filename.c_str(), NULL, 0, NULL);
 
     while(1)
     {
-        t1=time(0);
+        t1=time(0); //using time technique to record duration played
         mciSendString("play mp3", NULL, 0, NULL);
         cout<<"Playing song - "<<d.returnSongName()<<endl;
         cout<<endl;
@@ -241,18 +288,21 @@ void playSong(details d)
             previous_pause_time+=t2-t1;
             cout<<"Enter 1 to resume the song or 2 to stop: ";
             cin>>n;
+            //resume the song after pausing
             if(n==1)
             {
                 t1=time(0);
                 mciSendString("play mp3", NULL, 0, NULL);
                 cout<<"Resuming song... \n";
             }
+            //close the song after pausing
             else if(n==2)
             {
                 mciSendString("close mp3", NULL, 0, NULL);
                 break;
             }
         }
+        //close the song before pausing
         else if(n==2)
         {
             mciSendString("close mp3", NULL, 0, NULL);
@@ -260,6 +310,7 @@ void playSong(details d)
         }
     }
 }
+/* class songQueue maintains the queue of songs */
 class songQueue
 {
     song *head, *tail;
