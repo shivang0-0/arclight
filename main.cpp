@@ -1,13 +1,12 @@
 #include <iostream>
 #include <windows.h>
-#include <vector>
 #include <fstream>
 #include <time.h>
 #include <queue>
 using namespace std;
 
 /* Forward declaration of
-classes to use certain funcitonalities */
+classes to use certain functionalities */
 
 class TreeNode;
 class tree;
@@ -161,31 +160,26 @@ public:
     to be searched using linear search algo*/
     int getindex(details *d,string name)
     {
-        cout<<"getindx reached"<<endl;
         for(int i=0; i<10; i++)
         {
-            cout<<"In loop"<<endl;
             if(d[i].name == name)
             {
-                cout<<"idx in getindx: "<<i<<endl;
                 return i;
             }
         }
+        return -1;
     }
     /*function to search the name of song in BST
-    and call getindx to get and then return it 
+    and call getindx to get and then return it
     to the driver code*/
     int searchnplay(string name,details *d)
     {
-        cout<<"srchnplay reached "<<endl;
         TreeNode *temp = root;
         while(temp != NULL)
         {
             if(temp->name == name)
             {
-                cout<<"Called getindex"<<endl;
                 int idx = getindex(d,name);
-                cout<<"idx in srchnplay: "<<idx<<endl;
                 return idx;
             }
             else if(name < temp->name)
@@ -251,7 +245,7 @@ bool writeSongs(details *d, tree *bst)
 skipComma:
                 i++;
             }
-            //bst insertoion function calling
+            //bst insertion function calling
             bst->insertIntoBST(name);
             //insertion in details array calling
             (d+j)->addDetails(name, artist, file);
@@ -271,7 +265,6 @@ void playSong(details d)
     string filename = "open \"songs\\"+d.returnFileName()+"\" type mpegvideo alias mp3";
     //function included in windows.h to perform operations with multimedia formats
     mciSendString(filename.c_str(), NULL, 0, NULL);
-
     while(1)
     {
         t1=time(0); //using time technique to record duration played
@@ -315,11 +308,13 @@ class songQueue
 {
     song *head, *tail;
 public:
+    //default constructor of queue
     songQueue()
     {
         head = NULL;
         tail = NULL;
     }
+    //function to add songs to the queue
     void addSong(details d)
     {
         song *s = new song;
@@ -342,7 +337,7 @@ public:
         s->next = NULL;
 
     }
-
+    //funciton to print the queue contents
     bool printSongByIndex(int x)
     {
         song* temp = head;
@@ -355,6 +350,7 @@ public:
 
         return true;
     }
+    //function to play queue contents from the end
     void playQueueFromEnd(int i)
     {
         song* temp = tail;
@@ -366,6 +362,7 @@ public:
             temp = temp->prev;
         }
     }
+    //function to play queue contents form the start
     void playQueueFromFront()
     {
         song* temp = head;
@@ -378,6 +375,7 @@ public:
             temp = temp->next;
         }
     }
+    //function to delete the queue
     void clearQueue()
     {
         song* temp;
@@ -388,10 +386,12 @@ public:
             delete temp;
         }
     }
+    //function to return the head reference of the queue
     song* retHead()
     {
         return head;
     }
+    //destructor for class quueue
     ~songQueue()
     {
         song* temp;
@@ -403,23 +403,28 @@ public:
         }
     }
 };
+/*class to maintain the playlist*/
 class playlist
 {
     song *head;
 public:
+    //default constructor for playlist class
     playlist()
     {
         head = NULL;
     }
+    //function to add songs to the playlist
     void addSong(details d)
     {
         song *s = new song;
         s->d = d;
+        //if head of list is NULL intialise new node with head
         if(head==NULL)
         {
             head = s;
             s->prev = NULL;
         }
+        //else traverse the list till NULL location is found
         else
         {
             song *temp = head;
@@ -430,6 +435,7 @@ public:
         }
         s->next = NULL;
     }
+    //function to delete a song from the playlist
     bool delSong(details d)
     {
         int flag = 0;
@@ -457,6 +463,7 @@ skipWhile:
         else
             return false;
     }
+    //function to print the songs present in the playlist
     bool printSongs()
     {
         int i = 1;
@@ -471,6 +478,7 @@ skipWhile:
         }
         return true;
     }
+    //search function for playlist
     bool searchSong(details d)
     {
         song* temp = head;
@@ -484,6 +492,8 @@ skipWhile:
         }
         return false;
     }
+    //driver function for playing the playlist using playlist index
+    //default playlist number starts form '1'
     void playPlaylist()
     {
         song* temp = head;
@@ -493,6 +503,7 @@ skipWhile:
             temp = temp->next;
         }
     }
+    //destructor for playlist class
     ~playlist()
     {
         song* temp;
@@ -504,14 +515,25 @@ skipWhile:
         }
     }
 };
+
+/*driver code*/
+
 int main()
 {
+    /*declaring array of details class
+    maximum size is set to 10 for this prototype*/
     details d[10];
+    /*Queue variable to maintain the queue*/
     songQueue q;
     int ch,w=0,opt=1;
     int i=0,x,y,z;
+    /*declaring array of playlist class
+    maximum size is set to 10 for this prototype*/
     playlist p[10];
+    /*function call for writing songs in details
+    array and in bst*/
     writeSongs(d,&bst);
+    cout<<"CURRENT SONGS IN OUR LIBRARY: ";
     bst.display();
     cout<<endl;
     while(true)
@@ -527,6 +549,7 @@ int main()
         cin>>ch;
         switch(ch)
         {
+        //Play Single Song
         case 1:
         {
             for(int x=0; x<5; x++)
@@ -542,6 +565,7 @@ int main()
             system("cls");
             break;
         }
+        //Add songs to Queue
         case 2:
         {
             while(opt)
@@ -563,6 +587,7 @@ int main()
             system("cls");
             break;
         }
+        //Play queue
         case 3:
         {
             if(q.retHead() == NULL)
@@ -587,6 +612,7 @@ replay:
             system("cls");
             break;
         }
+        //Create Playlist
         case 4:
         {
             if(i<=9)
@@ -613,6 +639,7 @@ replay:
                 cout<<"Maximum play list created!";
             break;
         }
+        //Play existing Playlist
         case 5:
         {
             if(i==0)
@@ -632,6 +659,7 @@ replay:
             p[z-1].playPlaylist();
             break;
         }
+        //Search 'n play
         case 6:
         {
             string name;
@@ -641,6 +669,7 @@ replay:
             playSong(d[idx]);
             break;
         }
+        //Exit
         case 7:
         {
             cout<<"THANK YOU "<<(char)1<<endl;
