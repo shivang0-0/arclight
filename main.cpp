@@ -4,6 +4,7 @@
 #include <fstream>
 #include <time.h>
 #include <queue>
+#include <graphics.h>
 using namespace std;
 
 class TreeNode;
@@ -140,6 +141,7 @@ public:
                 return i;
             }
         }
+        return -1;
     }
     int searchnplay(string name,details *d)
     {
@@ -166,11 +168,11 @@ public:
         cout<<"Not found in our library!!"<<endl;
         return -1;
     }
-}bst;
+} bst;
 void details::addDetails(TreeNode *root,tree t)
-    {
-        t.insertIntoBST(name);
-    }
+{
+    t.insertIntoBST(name);
+}
 struct song
 {
     details d;
@@ -224,13 +226,40 @@ void playSong(details d)
     time_t t1, t2, previous_pause_time=0;
     string filename = "open \"songs\\"+d.returnFileName()+"\" type mpegvideo alias mp3";
     mciSendString(filename.c_str(), NULL, 0, NULL);
-
+    string command="Set mp3 time format milliseconds";
+    mciSendString(command.c_str(), NULL, 0, NULL);
+    command="Status mp3 length";
+    long int duration;
+    char retstring[256];
+    mciSendString(command.c_str(), retstring, 256, NULL);
+    string r(retstring);
+    duration =stol(r);
+    cout<<"\nSong Duration: "<<duration<<endl;
     while(1)
     {
         t1=time(0);
         mciSendString("play mp3", NULL, 0, NULL);
         cout<<"Playing song - "<<d.returnSongName()<<endl;
         cout<<endl;
+        char songname[d.returnSongName().length()+1];
+        strcpy(songname,d.returnSongName().c_str());
+        int gd = DETECT, gm;
+        initgraph(&gd, &gm, "");
+        for(int i=0; i<1280; i++)
+        {
+            setcolor(YELLOW);
+            settextstyle(8,0,4);
+            int x=strlen(songname)*20;
+            if(i<640-x)
+                moveto(i,200);
+            else
+                moveto(abs(640-x-(i-640+x)),200);
+            outtext(songname);
+            delay(duration/800);
+            setcolor(WHITE);
+            line(i,290,i,310);
+        }
+        closegraph();
         cout << "Enter 1 to pause the song or 2 to end the song - " << endl;
         cin>>n;
         if(n==1)
